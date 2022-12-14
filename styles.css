@@ -1,0 +1,61 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+    font-family: Helvetica;
+    font-size: 15pt;
+    background-color: white;
+    color:black;
+    text-align:center;
+}
+
+#Instruction1 {
+    display: flex;
+    max-width: 80%;
+    margin: 0 auto;
+    align-items: center;
+    flex-direction: column;
+}
+#continueInstructionButton1 {
+    display: inherit;
+}
+button {
+    display: none;
+    padding: 0.5em;
+}
+#Instruction2,
+#Instruction3,
+#Instruction4,
+#Instruction5  {
+    display:none;
+    max-width: 50%; 
+    margin: 0 auto;
+}
+#canvas_L {
+    display: none;
+    background-color: gray;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); 
+}
+#canvas_fixation {
+    display: none;
+    background-color: black;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); 
+}
+
+#occluder {
+    display: none;
+    left: 50%;
+    top: 50%;
+}
+.shape {
+    display: none;
+    width: 55px;
+    height: 55px;
+}
