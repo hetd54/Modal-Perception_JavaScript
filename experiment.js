@@ -9,7 +9,8 @@ let screeHeight = screen.height;
 //--------------------------------------
 //---------SET PARAMETERS BEGIN---------
 //--------------------------------------
-const secretCode = "kFe8fQy4dXE9".shuffle();
+const str = "AjpQWc135792"
+const secretCode = str.split('').sort(function(){return 0.5-Math.random()}).join('');
 var colorArray_1 = [];
 
 for(i=0;i<256;i++){ // QUESTION: why 256 here and 255 in other color arrays?
@@ -373,19 +374,7 @@ function shuffle(o){
     for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
         return o;
 }
-/* String-specific shuffle for the secret code */
-String.prototype.shuffle = function () {
-    var a = this.split(""),
-        n = a.length;
 
-    for(var i = n - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var tmp = a[i];
-        a[i] = a[j];
-        a[j] = tmp;
-    }
-    return a.join("");
-}
 function random(min,max) {
     const num = Math.floor(Math.random() * (max - min)) + min;
     return num;
@@ -529,7 +518,12 @@ Ball.prototype.updatePosition_B = function() {
 };
 
 
-// exp procedures 
+// exp procedures
+function showInstructions() {
+    $('#consent').hide();
+    $('#Instruction1').show();
+    $('#continueInstructionButton1').show();
+}
 function continueInstruction1() {
     $('#Instruction1').hide();
     $('#continueInstructionButton1').hide();
@@ -864,7 +858,7 @@ function doneExperiment() {
 
 // Testing data posting
 //$('#continueInstructionButton1').click(postData);
-
+$('#consented').click(showInstructions);
 $('#continueInstructionButton1').click(continueInstruction1);
 $('#startTrainingButton').click(showTrials_training_0);
 $('#nextTrainingTrialButton').click(showTrials_training);

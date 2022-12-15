@@ -10,20 +10,25 @@ body {
     text-align:center;
 }
 
-#Instruction1 {
+#consent {
     display: flex;
     max-width: 80%;
     margin: 0 auto;
     align-items: center;
     flex-direction: column;
 }
-#continueInstructionButton1 {
+li {
+    text-align: left;
+    margin: 15px;
+}
+#consented {
     display: inherit;
 }
 button {
     display: none;
     padding: 0.5em;
 }
+#Instruction1,
 #Instruction2,
 #Instruction3,
 #Instruction4,
