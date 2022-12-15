@@ -9,7 +9,7 @@ let screeHeight = screen.height;
 //--------------------------------------
 //---------SET PARAMETERS BEGIN---------
 //--------------------------------------
-const secretCode = shuffle("kFe8fQy4dXE9");
+const secretCode = "kFe8fQy4dXE9".shuffle();
 var colorArray_1 = [];
 
 for(i=0;i<256;i++){ // QUESTION: why 256 here and 255 in other color arrays?
@@ -75,13 +75,41 @@ function getBrowser() {
     function getSubjectID() {
       var paramstr = window.location.search.substring(1);
       var parampairs = paramstr.split("&");
+      var foundId;
       for (i in parampairs) {
         var pair = parampairs[i].split("=");
         if (pair[0] == "workerId") {
-          return pair[1];
+          foundId = pair[1];
+        }
       }
+      if (foundId){
+        return foundId;
+      } else {
+        return "testSubject";
+      }
+    }
+// ======================== CONVERT JSON TO CSV ======================= //
+// https://codingbeautydev.com/blog/javascript-convert-json-to-csv/ //
+function jsonToCsv(items) {
+    const header = Object.keys(items[0]);
+    console.log(header);
+  
+    const headerString = header.join(',');
+  
+    // handle null or undefined values here
+    const replacer = (key, value) => value ?? '';
+  
+    const rowItems = items.map((row) =>
+      header
+        .map((fieldName) => JSON.stringify(row[fieldName], replacer))
+        .join(',')
+    );
+  
+    // join header and body, and break into separate lines
+    const csv = [headerString, ...rowItems].join('\r\n');
+  
+    return csv;
   }
-}
 function redirect() {
     // TODO: redirect elsewhere?
         window.location = "https://jhu.sona-systems.com/webstudy_credit.aspx?experiment_id=754&credit_token=2d6ab745370a4d0ba5567cdfdef69ee9&survey_code="+window.subjectID
@@ -91,10 +119,12 @@ function redirect() {
 function postData() {
       // Collect responses into JSON / csv file
       var dataString = JSON.stringify(window.frame);
+      const csv = jsonToCsv(window.frame);
+
       // post response to server
-      $.post("http://pclpsrescit2.services.brown.edu/blt_lab/mp/data/studysave.php", {
-        fname: window.subjectID,
-        postresult_string: dataString,  
+      $.post("http://pclpsrescit2.services.brown.edu/blt_lab/mp-3/data/studysave.php", {
+        fname: `${window.subjectID}.csv`,
+        postresult_string: csv,  
       }).done(function(){
         $("#instructions").text(`Thank you! Your secret code is: ${secretCode}
         Please copy and paste this into your submission box! You may then close this window.`);
@@ -115,7 +145,7 @@ var vertical_tmp_B;
 var vertical_tmp_array = [-50,+50]; // QUESTION: what THIS?
 function trialGenerator(nRepetitions,trialsInfo) {
 
-    for (var j1 = 0; j1 < 2*nRepetitions; j1++) { 
+    for (var j1 = 0; j1 < 2*nRepetitions; j1++) { // 44 trials?
         
         var arr = [];
         while(arr.length < 2) {
@@ -163,7 +193,7 @@ function trialGenerator(nRepetitions,trialsInfo) {
         });                  
     }
 
-    for (var j1 = 0; j1 < nRepetitions; j1++) {
+    for (var j1 = 0; j1 < nRepetitions; j1++) { // 22 trials?
 
         var arr = [];
         while(arr.length < 3) {
@@ -211,7 +241,7 @@ function trialGenerator(nRepetitions,trialsInfo) {
         });
     }
 
-    for (var j1 = 0; j1 < nRepetitions; j1++) {
+    for (var j1 = 0; j1 < nRepetitions; j1++) { // 22 trials
         
         var arr = [];
         while(arr.length < 3) {
@@ -259,7 +289,7 @@ function trialGenerator(nRepetitions,trialsInfo) {
         });
     }
 
-    for (var j1 = 0; j1 < 2*nRepetitions; j1++) {
+    for (var j1 = 0; j1 < 2*nRepetitions; j1++) { // 44 trials
         
         var arr = [];
         while(arr.length < 2) {
@@ -311,7 +341,19 @@ function trialGenerator(nRepetitions,trialsInfo) {
 }
 
 var trialsInfo = [];
-var nRepetitions = 22;//44
+/*
+nRepetitions is used to determine the number of trials in the experiment!
+There are four sets of trials, which results in the following numbers within
+the trialGenerator:
+nRepetitions * 2
++ nRepetitions
++ nRepetitions
++ nRepetitions * 2!
+
+So with nRepetitions = 22, you would have
+44 + 22 + 22 + 44 = 132 trials
+*/
+var nRepetitions = 44; // 22
 var frame = trialGenerator(nRepetitions,trialsInfo);
 var nTrials = frame.length;
 
@@ -331,6 +373,19 @@ function shuffle(o){
     for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
         return o;
 }
+/* String-specific shuffle for the secret code */
+String.prototype.shuffle = function () {
+    var a = this.split(""),
+        n = a.length;
+
+    for(var i = n - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = a[i];
+        a[i] = a[j];
+        a[j] = tmp;
+    }
+    return a.join("");
+}
 function random(min,max) {
     const num = Math.floor(Math.random() * (max - min)) + min;
     return num;
@@ -344,7 +399,7 @@ function Ball(x,y,color,size) {
 var nDots = 1; 
 var dotRadius = 40; //Radius of each dot in pixels
 var balls = [];
-// colorNumb = 10, red/200, yellow/380, green/1000, blue/1200, purple
+// colorNumb = 10, red/ 200, yellow /380, green/ 1000, blue/ 1200, purple
 var balls_colorArray = [10,200,380,1000,1200]; // QUESTION: what THIS? Why these numbers??
 var colorInd;
 var x_0_A;
@@ -793,11 +848,23 @@ if (responseAcceptable == true) {
 }           
 }, false);
 // save json file to local device
+function download(content, fileName, contentType) {
+    var a = document.createElement("a");
+    var file = new Blob([content], {type: contentType});
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
+};
+
 function doneExperiment() {
     JSONObj = JSON.stringify(window.frame);
     download(JSONObj, "test_data.json", "json"); 
 };
 /* wait for clicks */
+
+// Testing data posting
+//$('#continueInstructionButton1').click(postData);
+
 $('#continueInstructionButton1').click(continueInstruction1);
 $('#startTrainingButton').click(showTrials_training_0);
 $('#nextTrainingTrialButton').click(showTrials_training);
